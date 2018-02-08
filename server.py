@@ -30,12 +30,13 @@ def least_cost_path(graph, start, dest, cost):
     events.insert((start,start),0)
     while len(events) > 0:
         (u,v),time = events.popmin()
+        print('u:{} , v:{} , time:{} '.format(u,v,time))
         if v not in reached:
             reached[v]=u
             for w in graph.neighbours(v):
                 events.insert((v,w),time+cost.distance((v,w)))
     #print(reached)
-    return reached
+    return list(reached.keys())
 
 def load_edmonton_graph(filename):
     """
@@ -92,9 +93,9 @@ class CostDistance:
         Here e is a pair (u,v) of vertices.
         Returns the Euclidean distance between the two vertices u and v.
         """
-
-        x = location[u]
-        y = location[v]
+        u,v = e
+        x = self.location[u]
+        y = self.location[v]
 
         distance = sqrt((x[0]-x[1])**2 + (y[0]-y[1])**2)
 
