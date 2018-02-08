@@ -1,5 +1,6 @@
 from graph import Graph
 from binary_heap import BinaryHeap
+from math import sqrt
 
 def least_cost_path(graph, start, dest, cost):
     """Find and return a least cost path in graph from start
