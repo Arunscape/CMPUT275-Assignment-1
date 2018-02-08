@@ -23,6 +23,8 @@ def load_edmonton_graph(filename):
     g = Graph()
     location = dict()
 
+    #hey
+
     with open(filename, 'r') as infile:
         for line in infile:
             split_line = line.split(",")
