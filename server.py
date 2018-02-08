@@ -93,10 +93,10 @@ class CostDistance:
         Returns the Euclidean distance between the two vertices u and v.
         """
 
-        x = location[u]
-        y = location[v]
+        u = self.location[e[0]]
+        v = self.location[e[1]]
 
-        distance = sqrt((x[0]-x[1])**2 + (y[0]-y[1])**2)
+        distance = sqrt((u[0]-v[0])**2 + (u[1]-v[1])**2)
 
         return distance
 
