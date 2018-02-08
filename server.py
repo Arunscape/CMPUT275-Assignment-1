@@ -52,7 +52,25 @@ def load_edmonton_graph(filename):
     Note: the vertex identifiers should be converted to integers
     before being added to the graph and the dictionary.
     """
-    pass
+
+    g = Graph()
+    location = dict()
+
+    #hey
+
+    with open(filename, 'r') as infile:
+        for line in infile:
+            split_line = line.split(",")
+
+            if split_line[0] == "V":
+                g.add_vertex(int(split_line[1]))
+                pair = (int(float(split_line[2])*10000),int(float(split_line[3])*10000))
+                location[int(split_line[1])] = pair
+
+            if split_line[0] == "E":
+                g.add_edge((int(split_line[1]),int(split_line[2])))
+
+    return g, location
 
 class CostDistance:
     """
@@ -62,28 +80,21 @@ class CostDistance:
     def __init__(self, location):
         """
         Creates an instance of the CostDistance class and stores the
-        3
         dictionary "location" as a member of this class.
         """
-        pass
+
+        self.location = location
+
+
     def distance(self, e):
         """
         Here e is a pair (u,v) of vertices.
         Returns the Euclidean distance between the two vertices u and v.
         """
-        pass
 
+        x = location[u]
+        y = location[v]
 
-if __name__ == "__main__":
-    graph = Graph({1,2,3,4,5,6}, [(1,2), (1,3), (1,6), (2,1),(2,3), (2,4), (3,1), (3,2), (3,4), (3,6), (4,2), (4,3), (4,5), (5,4), (5,6), (6,1), (6,3), (6,5)])
-    #
-    #lengths of the edges described explicitly
-    weights = {(1,2): 7, (1,3):9, (1,6):14, (2,1):7, (2,3):10,
-               (2,4):15, (3,1):9, (3,2):10, (3,4):11, (3,6):2,
-               (4,2):15, (4,3):11, (4,5):6, (5,4):6, (5,6):9, (6,1):14,
-               (6,3):2, (6,5):9}
+        distance = sqrt((x[0]-x[1])**2 + (y[0]-y[1])**2)
 
-    cost=CostDistance(.123)
-
-    least_cost_path(graph,1,3,cost)
-    # print()
+        return distance
