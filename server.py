@@ -66,7 +66,7 @@ def load_edmonton_graph(filename):
 
             if split_line[0] == "V":
                 g.add_vertex(int(split_line[1]))
-                pair = (int(float(split_line[2])*10000),int(float(split_line[3])*10000))
+                pair = (int(float(split_line[2])*100000),int(float(split_line[3])*100000))
                 location[int(split_line[1])] = pair
 
             if split_line[0] == "E":
