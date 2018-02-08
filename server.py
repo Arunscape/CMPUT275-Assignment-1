@@ -99,3 +99,7 @@ class CostDistance:
         distance = sqrt((x[0]-x[1])**2 + (y[0]-y[1])**2)
 
         return distance
+
+if __name__ == "__main__":
+    #test things
+    pass
