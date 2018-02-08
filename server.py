@@ -1,6 +1,7 @@
 from graph import Graph
 from binary_heap import BinaryHeap
 from math import sqrt
+from breadth_first_search import get_path
 
 def least_cost_path(graph, start, dest, cost):
     """Find and return a least cost path in graph from start
@@ -36,7 +37,7 @@ def least_cost_path(graph, start, dest, cost):
             for w in graph.neighbours(v):
                 events.insert((v,w),time+cost.distance((v,w)))
     #print(reached)
-    return list(reached.keys())
+    return get_path(reached,start,dest)
 
 def load_edmonton_graph(filename):
     """
