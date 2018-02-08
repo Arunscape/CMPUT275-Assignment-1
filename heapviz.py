@@ -3,7 +3,7 @@
 # Only works with the BinaryHeap class we developed in 275
 
 from graphviz import Digraph
-from binary_heap import BinaryHeap
+# from binary_heap import BinaryHeap
 import random
 import copy
 
