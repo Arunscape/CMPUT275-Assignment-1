@@ -30,7 +30,7 @@ def least_cost_path(graph, start, dest, cost):
     events.insert((start,start),0)
     while len(events) > 0:
         (u,v),time = events.popmin()
-        print('u:{} , v:{} , time:{} '.format(u,v,time))
+        #print('u:{} , v:{} , time:{} '.format(u,v,time))
         if v not in reached:
             reached[v]=u
             for w in graph.neighbours(v):
