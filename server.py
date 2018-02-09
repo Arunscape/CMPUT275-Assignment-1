@@ -121,5 +121,5 @@ if __name__ == "__main__":
     line = input().split()
 
     if line[0]=='R':
-        startvertex= find_nearest_vertex(line[1],line[2])
-        endvertex = find_nearest_vertex(line[3],line[4])
+        startvertex= find_nearest_vertex(location, (line[1],line[2]) )
+        endvertex = find_nearest_vertex(location, (line[3],line[4]) )
