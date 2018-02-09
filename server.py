@@ -123,3 +123,7 @@ if __name__ == "__main__":
     if line[0]=='R':
         startvertex= find_nearest_vertex(location, (line[1],line[2]) )
         endvertex = find_nearest_vertex(location, (line[3],line[4]) )
+        cost = CostDistance(location)
+        path = least_cost_path(yeg_graph, startvertex, endvertex,cost)
+        for x in path:
+            print(x)
