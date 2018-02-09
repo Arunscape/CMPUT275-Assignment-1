@@ -9,22 +9,21 @@ def least_cost_path(graph, start, dest, cost):
     Efficiency: If E is the number of edges, the run-time is
     O( E log(E) ).
     Args:
-    graph (Graph): The digraph defining the edges between the
-    vertices.
-    start: The vertex where the path starts. It is assumed
-    that start is a vertex of graph.
-    dest:  The vertex where the path ends. It is assumed
-    that dest is a vertex of graph.
-    cost:  A class with a method called "distance" that takes
-    as input an edge (a pair of vertices) and returns the cost
-    of the edge. For more details, see the CostDistance class
-    description below.
+        graph (Graph): The digraph defining the edges between the
+        vertices.
+        start: The vertex where the path starts. It is assumed
+        that start is a vertex of graph.
+        dest:  The vertex where the path ends. It is assumed
+        that dest is a vertex of graph.
+        cost:  A class with a method called "distance" that takes
+        as input an edge (a pair of vertices) and returns the cost
+        of the edge. For more details, see the CostDistance class
+        description below.
     Returns:
-    list: A potentially empty list (if no path can be found) of
-    the vertices in the graph. If there was a path, the first
-    vertex is always start, the last is always dest in the list.
-    Any two consecutive vertices correspond to some
-    edge in graph.
+        list: A potentially empty list (if no path can be found) of
+        the vertices in the graph. If there was a path, the first
+        vertex is always start, the last is always dest in the list.
+        Any two consecutive vertices correspond to some edge in graph.
     """
     #Dijkstra’s Algorithm
     reached=dict() #reached dictionary
@@ -44,24 +43,17 @@ def least_cost_path(graph, start, dest, cost):
 def load_edmonton_graph(filename):
     """
     Loads the graph of Edmonton from the given file.
-    Returns two items
-    graph: the instance of the class Graph() corresponding to the
-    directed graph from edmonton-roads-2.0.1.txt
-    location: a dictionary mapping the identifier of a vertex to
-    the pair (lat, lon) of geographic coordinates for that vertex.
-    These should be integers measuring the lat/lon in 100000-ths
-    of a degree.
-    In particular, the return statement in your code should be
-    return graph, location
-    (or whatever name you use for the variables).
-    Note: the vertex identifiers should be converted to integers
-    before being added to the graph and the dictionary.
+    Returns two items:
+        graph: the instance of the class Graph() corresponding to the
+        directed graph from edmonton-roads-2.0.1.txt
+        location: a dictionary mapping the identifier of a vertex to
+        the pair (lat, lon) of geographic coordinates for that vertex.
+        These should be integers measuring the lat/lon in 100000-ths
+        of a degree.
     """
 
     g = Graph()
     location = dict()
-
-    #hey
 
     with open(filename, 'r') as infile:
         for line in infile:
@@ -69,9 +61,12 @@ def load_edmonton_graph(filename):
 
             if split_line[0] == "V":
                 g.add_vertex(int(split_line[1]))
+
+                # converting the raw lat/lon to ints in 100000-ths of a degree
                 pair = (int(float(split_line[2])*100000),int(float(split_line[3])*100000))
                 location[int(split_line[1])] = pair
 
+            # undirected graph
             if split_line[0] == "E":
                 g.add_edge((int(split_line[1]),int(split_line[2])))
 
@@ -90,13 +85,11 @@ class CostDistance:
 
         self.location = location
 
-
     def distance(self, e):
         """
         Here e is a pair (u,v) of vertices.
         Returns the Euclidean distance between the two vertices u and v.
         """
-
 
         u = self.location[e[0]]
         v = self.location[e[1]]
@@ -106,11 +99,18 @@ class CostDistance:
         return distance
 
 def find_nearest_vertex(location, coords):
-    ''' Returns the closest vertex to a set of coordinates '''
+    """
+    Find and return the closest vertex to a set of coordinates
+    Args:
+        location: a dictionary mapping vertices to their lat/lon coordinates
+        coords: a tuple containing the lat/lon coords you want to find the
+        nearest vertex to
+    """
 
     min_distance = float('inf')
-    closest = 0
+    closest = 0 # just to initialize it
     for v in location:
+        # Euclidean distance
         distance = sqrt((coords[0]-location[v][0])**2 + (coords[1]-location[v][1])**2)
         if distance <= min_distance:
             closest = v
