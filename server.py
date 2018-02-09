@@ -104,5 +104,6 @@ class CostDistance:
         return distance
 
 if __name__ == "__main__":
-    #test things
-    pass
+    line=imput().split()
+    print(line)
+    
