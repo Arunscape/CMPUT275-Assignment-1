@@ -116,29 +116,47 @@ def find_nearest_vertex(location, coords):
 
     return closest
 
+def wait_for_acknowledgement():
+    acknowledged = False
+    while not acknowledged:
+        # if input().split()[0] == 'A':
+         if input() == 'A':
+            acknowledged=True
 
 if __name__ == "__main__":
     yeg_graph, location = load_edmonton_graph("edmonton-roads-2.0.1.txt")
-    line = input().split()
+    cost = CostDistance(location)
+    done = False
 
-    if line[0]=='R':
-        startvertex= find_nearest_vertex(location, (int(line[1]),int(line[2])) )
-        endvertex = find_nearest_vertex(location, (int(line[3]),int(line[4])) )
-        # print('Start vertex: ',line[1],line[2])
-        # print('End vertex: ',line[3],line[4])
-        # print(startvertex, endvertex)
+    while not done:
+        line = input().split()
+        # print(line)
+        if line == []:
+            continue
 
-        print("path: ")
-        cost = CostDistance(location)
-        path = least_cost_path(yeg_graph, startvertex, endvertex,cost)
-        print('N', len(path))
-        for x in path:
-            while x != endvertex:
-                acknowledged=False
-                while not acknowledged:
-                    if input().split()[0] == 'A':
-                        print('W', location[x][0], location[x][1])
-                        acknowledged=True
-                if acknowledged:
-                    break;
-        print('E')
+        elif line[0]=='R':
+            startvertex= find_nearest_vertex(location, (int(line[1]),int(line[2])) )
+            endvertex = find_nearest_vertex(location, (int(line[3]),int(line[4])) )
+            # print('Start vertex: ',line[1],line[2])
+            # print('End vertex: ',line[3],line[4])
+            # print(startvertex, endvertex)
+
+            path = least_cost_path(yeg_graph, startvertex, endvertex,cost)
+            print('N', len(path))
+
+            wait_for_acknowledgement()
+
+            for waypoint in path:
+                print('W', location[waypoint][0], location[waypoint][1])
+                wait_for_acknowledgement()
+
+            print('E')
+            done=True
+            #         acknowledged=False
+            #         while not acknowledged:
+            #             if input().split()[0] == 'A':
+            #                 print('W', location[x][0], location[x][1])
+            #                 acknowledged=True
+            #         if acknowledged:
+            #             break;
+            # print('E')
