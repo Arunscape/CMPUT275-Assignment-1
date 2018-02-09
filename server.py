@@ -1,3 +1,8 @@
+"""
+This program acts as a server for a driving route finder for Edmonton.
+The client/server interactions are simulated via stdin and stdout
+"""
+
 from graph import Graph
 from binary_heap import BinaryHeap
 from math import sqrt
