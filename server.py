@@ -117,5 +117,6 @@ def find_nearest_vertex(location, coords):
 
 
 if __name__ == "__main__":
-
+    line=imput().split()
+    print(line)
     yeg_graph, location = load_edmonton_graph("edmonton-roads-2.0.1.txt")
