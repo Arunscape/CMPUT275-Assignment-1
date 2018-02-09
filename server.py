@@ -103,8 +103,17 @@ class CostDistance:
 
         return distance
 
-def find_nearest_vertex():
+def find_nearest_vertex(location, coords):
+    ''' Returns the closest vertex to a set of coordinates '''
 
+    min_distance = 0
+    for v in location:
+        distance = sqrt((coords[0]-location[v][0])**2 + (coords[1]-location[v][1])**2)
+        if distance <= min_distance:
+            closest = v
+            min_distance = distance
+
+    return closest
 
 
 if __name__ == "__main__":
