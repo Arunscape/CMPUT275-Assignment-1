@@ -26,15 +26,17 @@ def least_cost_path(graph, start, dest, cost):
     Any two consecutive vertices correspond to some
     edge in graph.
     """
-    reached=dict()
-    events = BinaryHeap()
-    events.insert((start,start),0)
+    #Dijkstra’s Algorithm
+    reached=dict() #reached dictionary
+    events = BinaryHeap() #stores burning events
+    events.insert((start,start),0) #start vertex burns at time 0
     while len(events) > 0:
         (u,v),time = events.popmin()
         #print('u:{} , v:{} , time:{} '.format(u,v,time))
         if v not in reached:
             reached[v]=u
             for w in graph.neighbours(v):
+                #new event, edge (v,w) started burning
                 events.insert((v,w),time+cost.distance((v,w)))
     #print(reached)
     return get_path(reached,start,dest)
@@ -117,6 +119,12 @@ def find_nearest_vertex(location, coords):
     return closest
 
 def wait_for_acknowledgement():
+    """
+    When called, this function waits for the capital letter
+    'A' to be entered via stdin. Recieving a letter 'A' means
+    that the client has acknowledged the waypoint that
+    the server sent.
+    """
     acknowledged = False
     while not acknowledged:
         # if input().split()[0] == 'A':
@@ -126,15 +134,20 @@ def wait_for_acknowledgement():
 if __name__ == "__main__":
     yeg_graph, location = load_edmonton_graph("edmonton-roads-2.0.1.txt")
     cost = CostDistance(location)
-    done = False
 
+    done = False
     while not done:
+        #loop until a valid request is recieved.
+        #a valid request starts with 'R' and looks something like:
+        # R 5365486 -11333915 5364728 -11335891
         line = input().split()
         # print(line)
+
         if line == []:
+            #if the input is empty, wait for next input
             continue
 
-        elif line[0]=='R':
+        elif line[0]=='R': #if a valid request is recieved
             startvertex= find_nearest_vertex(location, (int(line[1]),int(line[2])) )
             endvertex = find_nearest_vertex(location, (int(line[3]),int(line[4])) )
             # print('Start vertex: ',line[1],line[2])
@@ -142,21 +155,19 @@ if __name__ == "__main__":
             # print(startvertex, endvertex)
 
             path = least_cost_path(yeg_graph, startvertex, endvertex,cost)
+
+            #let client know how many waypoints will be sent
             print('N', len(path))
 
+            #wait for client to acknowledge the number of waypoints
             wait_for_acknowledgement()
 
+            #print waypoints to stdout, wait on each iteration for the
+            #client to acknowledge
             for waypoint in path:
                 print('W', location[waypoint][0], location[waypoint][1])
                 wait_for_acknowledgement()
 
+            #done sending all the waypoints, end communication
             print('E')
             done=True
-            #         acknowledged=False
-            #         while not acknowledged:
-            #             if input().split()[0] == 'A':
-            #                 print('W', location[x][0], location[x][1])
-            #                 acknowledged=True
-            #         if acknowledged:
-            #             break;
-            # print('E')
