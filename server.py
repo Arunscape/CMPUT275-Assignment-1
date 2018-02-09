@@ -106,7 +106,8 @@ class CostDistance:
 def find_nearest_vertex(location, coords):
     ''' Returns the closest vertex to a set of coordinates '''
 
-    min_distance = 0
+    min_distance = float('inf')
+    closest = 0
     for v in location:
         distance = sqrt((coords[0]-location[v][0])**2 + (coords[1]-location[v][1])**2)
         if distance <= min_distance:
@@ -121,9 +122,23 @@ if __name__ == "__main__":
     line = input().split()
 
     if line[0]=='R':
-        startvertex= find_nearest_vertex(location, (line[1],line[2]) )
-        endvertex = find_nearest_vertex(location, (line[3],line[4]) )
+        startvertex= find_nearest_vertex(location, (int(line[1]),int(line[2])) )
+        endvertex = find_nearest_vertex(location, (int(line[3]),int(line[4])) )
+        # print('Start vertex: ',line[1],line[2])
+        # print('End vertex: ',line[3],line[4])
+        # print(startvertex, endvertex)
+
+        print("path: ")
         cost = CostDistance(location)
         path = least_cost_path(yeg_graph, startvertex, endvertex,cost)
+        print('N', len(path))
         for x in path:
-            print(x)
+            while x != endvertex:
+                acknowledged=False
+                while not acknowledged:
+                    if input().split()[0] == 'A':
+                        print('W', location[x][0], location[x][1])
+                        acknowledged=True
+                if acknowledged:
+                    break;
+        print('E')
