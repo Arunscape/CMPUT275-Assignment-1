@@ -36,13 +36,11 @@ def least_cost_path(graph, start, dest, cost):
     events.insert((start,start),0) #start vertex burns at time 0
     while len(events) > 0:
         (u,v),time = events.popmin()
-        #print('u:{} , v:{} , time:{} '.format(u,v,time))
         if v not in reached:
             reached[v]=u
             for w in graph.neighbours(v):
                 #new event, edge (v,w) started burning
                 events.insert((v,w),time+cost.distance((v,w)))
-    #print(reached)
     return get_path(reached,start,dest)
 
 def load_edmonton_graph(filename):
@@ -132,7 +130,6 @@ def wait_for_acknowledgement():
     """
     acknowledged = False
     while not acknowledged:
-        # if input().split()[0] == 'A':
          if input() == 'A':
             acknowledged=True
 
@@ -146,7 +143,6 @@ if __name__ == "__main__":
         #a valid request starts with 'R' and looks something like:
         # R 5365486 -11333915 5364728 -11335891
         line = input().split()
-        # print(line)
 
         if line == []:
             #if the input is empty, wait for next input
@@ -155,9 +151,6 @@ if __name__ == "__main__":
         elif line[0]=='R': #if a valid request is recieved
             startvertex= find_nearest_vertex(location, (int(line[1]),int(line[2])) )
             endvertex = find_nearest_vertex(location, (int(line[3]),int(line[4])) )
-            # print('Start vertex: ',line[1],line[2])
-            # print('End vertex: ',line[3],line[4])
-            # print(startvertex, endvertex)
 
             path = least_cost_path(yeg_graph, startvertex, endvertex,cost)
 
