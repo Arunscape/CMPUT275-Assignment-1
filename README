@@ -1,28 +1,57 @@
-# Assignment 1 - Directions
-## Driving Route Finder
+Tamara Bojovic 1511502
+Arun Woosaree 1514457
+-------------------------------------------------------------------------------
 
-In this first part we implement
-the server-side of the required functionality:
+Assignment 1 Part 1 - Driving Route Finder:
+-------------------------------------------------------------------------------
+This program implements the server-side functionality of an Edmonton driving route
+finder. Requests for directions are made via standard input and the server
+provides way points using the standard output.
+
+In this first part we implement the server-side of the required functionality:
 
 1. Routines for building the graph by reading the provided text file.
 2. A cost function class for computing edge weights.
 3. A routine for computing least cost paths efficiently.
-4. A python route finding server that accepts route finding requests and provides paths through the
-specified protocol. Communication is done via stdin and stdout
+4. A python route finding server that accepts route finding requests and provides
+paths through the specified protocol. Communication is done via stdin and stdout
 
-We first implemented Dijkstra's Algorithm for finding the least
-cost path, and built a graph from an CSV file.
-The cost function class was used to #@Tamara what does this do lol
+Usage Instructions
+-------------------------------------------------------------------------------
+Open a terminal window in the same directory as the project folder.
+To run the route finder, type in
+______________________
+| $ python3 server.py |
+|_____________________|
 
+To make a request to the server type in
+______________________________________________________________
+| $ R [LAT OF START] [LON OF START] [LAT OF END] [LON OF END] |
+|_____________________________________________________________|
 
-## Required files from 'Helpful functions' folder:
+Note: The latitudes and longitudes are integers, 100000ths of a degree.
+
+The server will then respond with the number of way points. Enter in "A" to
+continue. Then the server will print out the coordinates of the way points, and
+the user will have to continually enter 'A' to get the next way point.
+The program only processes one request, then exits
+
+Required files from 'Helpful functions' folder:
+-------------------------------------------------------------------------------
 * binary_heap.py
 * breadth_first_search.py
 * graph.py
 
-## Modifications to files:
-
+Modifications to files:
+-------------------------------------------------------------------------------
 * line 2 in binary_heap.py was commented out
   ```
   from heapviz import *
   ```
+Acknowledgments:
+--------------------------------------------------------------------------------
+Files from the "helpful functions" folder from eClass were downloaded and
+imported in server.py; they are not written by us. The least_cost_path function
+(Djikstra's algorithm) was developed from pseudo code posted on the eClass slides.
+The CostDistance class had a method and property already defined, we implemented
+them and filled in the code.
