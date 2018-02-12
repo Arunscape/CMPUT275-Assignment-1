@@ -41,6 +41,8 @@ Required files from 'Helpful functions' folder:
 * binary_heap.py
 * breadth_first_search.py
 * graph.py
+NOTE: The file "edmonton-roads-2.0.1.txt" MUST be placed in the project directory.
+It is not included in our zip.
 
 Modifications to files:
 -------------------------------------------------------------------------------
