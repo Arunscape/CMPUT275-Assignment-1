@@ -148,7 +148,7 @@ if __name__ == "__main__":
             #if the input is empty, wait for next input
             continue
 
-        elif line[0]=='R': #if a valid request is recieved
+        elif line[0]=='R' and len(line) == 5: #if a valid request is recieved
             startvertex= find_nearest_vertex(location, (int(line[1]),int(line[2])) )
             endvertex = find_nearest_vertex(location, (int(line[3]),int(line[4])) )
 
