@@ -1,5 +1,5 @@
 import graphviz
-# from heapviz import *
+#from heapviz import *
 
 class BinaryHeap:
     """
@@ -171,6 +171,6 @@ if __name__ == "__main__":
     heap.insert("pig", 2)
     heap.popmin()
 
-    # dot = heapviz(heap)
-    #
-    # dot.render(view=True)
+    dot = heapviz(heap)
+
+    dot.render(view=True)
