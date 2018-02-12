@@ -157,6 +157,10 @@ if __name__ == "__main__":
             #let client know how many waypoints will be sent
             print('N', len(path))
 
+            #no path from start to end
+            if len(path) == 0:
+                break;
+
             #wait for client to acknowledge the number of waypoints
             wait_for_acknowledgement()
 
