@@ -146,6 +146,10 @@ int main() {
         end = get_cursor_lonlat();
 
         // TODO: communicate with the server to get the waypoints
+        
+
+
+
 
         // now we have stored the path length in
         // shared.num_waypoints and the waypoints themselves in
