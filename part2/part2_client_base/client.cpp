@@ -146,7 +146,33 @@ int main() {
         end = get_cursor_lonlat();
 
         // TODO: communicate with the server to get the waypoints
-        
+        Serial.print("R ")
+        Serial.print(start.lat)
+        Serial.print(" ")
+        Serial.print(start.lon)
+        Serial.print(" ")
+        Serial.print(end.lat)
+        Serial.print(" ")
+        Serial.print(end.lon)
+        Serial.flush()
+
+        char buffer[129];
+        int used = 0;
+
+        while (true) {
+          while (Serial.available() == 0);
+
+          buffer[used] = Serial.read();
+          ++used;
+
+          if (buffer[used-1] == '\n') {
+            buffer[used-1] = buffer[used] = buffer[used+1] = '.';
+            buffer[used+2] = '\n';
+            buffer[used+3] = '\0';
+            Serial.write(buffer); // does not add \r\n
+            used = 0;
+          }
+        }
 
 
 
