@@ -174,13 +174,37 @@ int main() {
           }
         }
 
-
-
-
         // now we have stored the path length in
         // shared.num_waypoints and the waypoints themselves in
         // the shared.waypoints[] array, switch back to asking for the
         // start point of a new request
+
+        //The code for reading from seria will be something like:
+
+        // WORKS IN THEORY NEED TO TEST THIS
+      //   for(i=0,i<shared.num_waypoints,i++){
+      //     uint8_t	byteRead = Serial.read();
+      //     count=0
+      //     while (byteRead != " "){
+      //       shared.waypoints[i].lat[count]=byteRead
+      //       byteRead = Serial.read();
+      //       count++
+      //     }
+      //     count=0
+      //     while (byteRead != "\0"){
+      //       shared.waypoints[i].lon[count]=byteRead
+      //       byteRead = Serial.read();
+      //       count++
+      //   }
+      // }
+
+        //TODO make a variable that tells me if a valid route was found plz
+
+        routefound=true
+        //~Arun
+
+        // TODO: communicate with the server to get the waypoints
+
         curr_mode = WAIT_FOR_START;
 
         // wait until the joystick button is no longer pushed
@@ -202,6 +226,31 @@ int main() {
       draw_cursor();
 
       // TODO: draw the route if there is one
+      if(route){//if a valid route was found
+        // In particular, you are mostly concerned with
+        //  - shared.num_waypoints: the number of waypoints on the path
+        //  - shared.waypoints[]: the lat/lon pairs of these waypoints
+        //  - max_waypoints (a global const, not in the shared_vars struct):
+        //    the maximum number of waypoints that can be stored in the
+        //    shared.waypoints[] array
+        for(i=0,i<shared.num_waypoints,i++){
+          Serial.println(shared.waypoints[i]) //wtf does this look like?
+
+          // in case I fuck something up
+          // x0=shared.waypoints[i].lat
+          // y0-shared.waypoints[i].lon
+          //
+          // x1=shared.waypoints[i+1].lat
+          // y1=shared.waypoints[i+1].lat
+
+          x0=longitude_to_x(map_number,shared.waypoints[i].lat)
+          y0=lattitude_to_y(map_number,shared.waypoints[i].lon)
+
+          x1=longitude_to_x(map_number,shared.waypoints[i+1].lat)
+          y1=lattitude_to_y(map_number,shared.waypoints[i+1].lat)
+          tft.drawLine(x0, y0, x1, y1, 0x001F);//0x001F is BLUE
+        }
+      }
     }
   }
 
