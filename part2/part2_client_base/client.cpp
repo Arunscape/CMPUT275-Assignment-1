@@ -148,26 +148,33 @@ int main() {
         // shared.num_waypoints and the waypoints themselves in
         // the shared.waypoints[] array, switch back to asking for the
         // start point of a new request
-        /*
-        The code for reading from seria will be something like:
 
-        for(i=0,i<shared.num_waypoints,i++){
-          uint8_t	byteRead = Serial.read();
-          while byteRead != "\0"
-          do shit
-          maybe something like
-          shared.waypoints[i].lat= oh fuck we have to list slice in c++
-          shared.waypoints[i].lon=
-          that's one line read, now loop
-        }
-        */
+        //The code for reading from seria will be something like:
+
+        // WORKS IN THEORY NEED TO TEST THIS
+      //   for(i=0,i<shared.num_waypoints,i++){
+      //     uint8_t	byteRead = Serial.read();
+      //     count=0
+      //     while (byteRead != " "){
+      //       shared.waypoints[i].lat[count]=byteRead
+      //       byteRead = Serial.read();
+      //       count++
+      //     }
+      //     count=0
+      //     while (byteRead != "\0"){
+      //       shared.waypoints[i].lon[count]=byteRead
+      //       byteRead = Serial.read();
+      //       count++
+      //   }
+      // }
+
         //TODO make a variable that tells me if a valid route was found plz
 
         routefound=true
         //~Arun
 
         // TODO: communicate with the server to get the waypoints
-          
+
         curr_mode = WAIT_FOR_START;
 
         // wait until the joystick button is no longer pushed
