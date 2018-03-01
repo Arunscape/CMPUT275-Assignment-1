@@ -144,18 +144,30 @@ int main() {
         // if we were waiting for the end point, record it
         // and then communicate with the server to get the path
         end = get_cursor_lonlat();
-
-        // TODO: communicate with the server to get the waypoints
-
         // now we have stored the path length in
         // shared.num_waypoints and the waypoints themselves in
         // the shared.waypoints[] array, switch back to asking for the
         // start point of a new request
+        /*
+        The code for reading from seria will be something like:
 
-
+        for(i=0,i<shared.num_waypoints,i++){
+          uint8_t	byteRead = Serial.read();
+          while byteRead != "\0"
+          do shit
+          maybe something like
+          shared.waypoints[i].lat= oh fuck we have to list slice in c++
+          shared.waypoints[i].lon=
+          that's one line read, now loop
+        }
+        */
         //TODO make a variable that tells me if a valid route was found plz
+
         routefound=true
         //~Arun
+
+        // TODO: communicate with the server to get the waypoints
+          
         curr_mode = WAIT_FOR_START;
 
         // wait until the joystick button is no longer pushed
@@ -195,11 +207,11 @@ int main() {
           // y1=shared.waypoints[i+1].lat
 
           x0=longitude_to_x(map_number,shared.waypoints[i].lat)
-          y0=longitude_to_y(map_number,shared.waypoints[i].lon)
+          y0=lattitude_to_y(map_number,shared.waypoints[i].lon)
 
           x1=longitude_to_x(map_number,shared.waypoints[i+1].lat)
-          y1=longitude_to_y(map_number,shared.waypoints[i+1].lat)
-          drawLine(x0, y0, x1, y1, 0x001F);//0x001F is BLUE
+          y1=lattitude_to_y(map_number,shared.waypoints[i+1].lat)
+          tft.drawLine(x0, y0, x1, y1, 0x001F);//0x001F is BLUE
         }
       }
     }
