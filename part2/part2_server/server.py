@@ -123,22 +123,13 @@ def find_nearest_vertex(location, coords):
 
     return closest
 
-def wait_for_acknowledgement():
-    """
-    When called, this function waits for the capital letter
-    'A' to be entered via stdin. Recieving a letter 'A' means
-    that the client has acknowledged the waypoint that
-    the server sent.
-    """
-    acknowledged = False
-    while not acknowledged:
-         if input() == 'A':
-            acknowledged=True
+def decode_string(line):
+    line_string = line.decode("ASCII")
+    stripped = line_string.rstrip("\r\n")
+    stripped = stripped.split()
+    return stripped
 
-if __name__ == "__main__":
-    yeg_graph, location = load_edmonton_graph("edmonton-roads-2.0.1.txt")
-    cost = CostDistance(location)
-
+def server_talk():
 
     with Serial("/dev/ttyACM0", baudrate=9600, timeout=1) as ser:
         while True:
@@ -148,45 +139,44 @@ if __name__ == "__main__":
                 print("timeout for initial request, restarting")
                 continue
 
-            line_string = line.decode("ASCII")
-            stripped = line_string.rstrip("\r\n")
-            stripped = stripped.split()
+            decoded = decode_string(line)
 
-            if stripped[0] !='R' or len(stripped) != 5: #if an invalid request is received
+            if decoded[0] != 'R' or len(decoded) != 5: #if an invalid request is received
                 print("invalid request, restarting")
                 continue
 
 
-            startvertex= find_nearest_vertex(location, (int(stripped[1]),int(stripped[2])) )
-            endvertex = find_nearest_vertex(location, (int(stripped[3]),int(stripped[4])) )
+            startvertex = find_nearest_vertex(location, (int(decoded[1]),int(decoded[2])) )
+            endvertex = find_nearest_vertex(location, (int(decoded[3]),int(decoded[4])) )
 
-            path = least_cost_path(yeg_graph, startvertex, endvertex,cost)
+            path = least_cost_path(yeg_graph, startvertex, endvertex, cost)
 
             out_line = "N " + str(len(path)) + "\n"
+            ser.write(out_line.encode("ASCII"))
 
-            encoded = out_line.encode("ASCII")
-
-            ser.write(encoded)
-
+            # if theres no path to the destination, return to waiting for a request
+            # without acknowledgement
             if len(path) == 0:
                 continue
 
 
+            # wait for acknowledgement
             line = ser.readline()
 
             if not line:
                 print("timeout after num waypoints sent, restarting")
                 continue
 
-            line_string = line.decode("ASCII")
-            stripped = line_string.rstrip("\r\n")
-            if stripped != 'A'
-                print("acknowledgement char of num waypoints not received, restarting")
+            decoded = decode_string(line)
+
+            if decoded[0] != 'A' or len(decoded) != 1:
+                print("acknowledgement of num waypoints not received, restarting")
                 continue
 
             timeout = False
             for waypoint in path:
-                out_line = "W " + str(location[waypoint][0]) + " " + str(location[waypoint][1])  "\n"
+                out_line = "W " + str(location[waypoint][0]) + " " + str(location[waypoint][1]) + "\n"
+                ser.write(out_line.encode("ASCII"))
 
                 line = ser.readline()
 
@@ -195,16 +185,22 @@ if __name__ == "__main__":
                     timeout = True
                     break
 
-                line_string = line.decode("ASCII")
-                stripped = line_string.rstrip("\r\n")
-                if stripped != 'A'
+                decoded = decode_string(line)
+                if decoded[0] != 'A' or len(decoded) != 1:
                     print("acknowledgement char not received when waypoint sent, restarting")
                     timeout = True
                     break
 
+            # don't send the E character if no acknowledgement was received
             if timeout:
                 continue
 
-            #done sending all the waypoints, return to request
-            encoded = "E".encode("ASCII")
-            ser.write(encoded)
+            #done sending all the waypoints, return to request waiting state
+            out_line = "E" + "\n"
+            ser.write(out_line.encode("ASCII"))
+
+if __name__ == "__main__":
+    yeg_graph, location = load_edmonton_graph("edmonton-roads-2.0.1.txt")
+    cost = CostDistance(location)
+
+    server_talk()
