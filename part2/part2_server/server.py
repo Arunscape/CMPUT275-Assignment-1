@@ -7,6 +7,8 @@ from graph import Graph
 from binary_heap import BinaryHeap
 from math import sqrt
 from breadth_first_search import get_path
+from serial import Serial
+from time import sleep
 
 def least_cost_path(graph, start, dest, cost):
     """Find and return a least cost path in graph from start
@@ -121,55 +123,84 @@ def find_nearest_vertex(location, coords):
 
     return closest
 
-def wait_for_acknowledgement():
-    """
-    When called, this function waits for the capital letter
-    'A' to be entered via stdin. Recieving a letter 'A' means
-    that the client has acknowledged the waypoint that
-    the server sent.
-    """
-    acknowledged = False
-    while not acknowledged:
-         if input() == 'A':
-            acknowledged=True
+def decode_string(line):
+    line_string = line.decode("ASCII")
+    stripped = line_string.rstrip("\r\n")
+    stripped = stripped.split()
+    return stripped
+
+def server_talk():
+
+    with Serial("/dev/ttyACM0", baudrate=9600, timeout=1) as ser:
+        while True:
+            line = ser.readline()
+
+            if not line:
+                print("timeout for initial request, restarting")
+                continue
+
+            decoded = decode_string(line)
+
+            if decoded[0] != 'R' or len(decoded) != 5: #if an invalid request is received
+                print("invalid request, restarting")
+                continue
+
+
+            startvertex = find_nearest_vertex(location, (int(decoded[1]),int(decoded[2])) )
+            endvertex = find_nearest_vertex(location, (int(decoded[3]),int(decoded[4])) )
+
+            path = least_cost_path(yeg_graph, startvertex, endvertex, cost)
+
+            out_line = "N " + str(len(path)) + "\n"
+            ser.write(out_line.encode("ASCII"))
+
+            # if theres no path to the destination, return to waiting for a request
+            # without acknowledgement
+            if len(path) == 0:
+                continue
+
+
+            # wait for acknowledgement
+            line = ser.readline()
+
+            if not line:
+                print("timeout after num waypoints sent, restarting")
+                continue
+
+            decoded = decode_string(line)
+
+            if decoded[0] != 'A' or len(decoded) != 1:
+                print("acknowledgement of num waypoints not received, restarting")
+                continue
+
+            timeout = False
+            for waypoint in path:
+                out_line = "W " + str(location[waypoint][0]) + " " + str(location[waypoint][1]) + "\n"
+                ser.write(out_line.encode("ASCII"))
+
+                line = ser.readline()
+
+                if not line:
+                    print("timeout in acknowledgement of waypoint, restarting")
+                    timeout = True
+                    break
+
+                decoded = decode_string(line)
+                if decoded[0] != 'A' or len(decoded) != 1:
+                    print("acknowledgement char not received when waypoint sent, restarting")
+                    timeout = True
+                    break
+
+            # don't send the E character if no acknowledgement was received
+            if timeout:
+                continue
+
+            #done sending all the waypoints, return to request waiting state
+            out_line = "E" + "\n"
+            ser.write(out_line.encode("ASCII"))
 
 if __name__ == "__main__":
     yeg_graph, location = load_edmonton_graph("edmonton-roads-2.0.1.txt")
     cost = CostDistance(location)
 
-    done = False
-    while not done:
-        #loop until a valid request is recieved.
-        #a valid request starts with 'R' and looks something like:
-        # R 5365486 -11333915 5364728 -11335891
-        line = input().split()
-
-        if line == []:
-            #if the input is empty, wait for next input
-            continue
-
-        elif line[0]=='R' and len(line) == 5: #if a valid request is recieved
-            startvertex= find_nearest_vertex(location, (int(line[1]),int(line[2])) )
-            endvertex = find_nearest_vertex(location, (int(line[3]),int(line[4])) )
-
-            path = least_cost_path(yeg_graph, startvertex, endvertex,cost)
-
-            #let client know how many waypoints will be sent
-            print('N', len(path))
-
-            #no path from start to end
-            if len(path) == 0:
-                break;
-
-            #wait for client to acknowledge the number of waypoints
-            wait_for_acknowledgement()
-
-            #print waypoints to stdout, wait on each iteration for the
-            #client to acknowledge
-            for waypoint in path:
-                print('W', location[waypoint][0], location[waypoint][1])
-                wait_for_acknowledgement()
-
-            #done sending all the waypoints, end communication
-            print('E')
-            done=True
+    server_talk()
