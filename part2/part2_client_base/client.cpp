@@ -212,15 +212,22 @@ int main() {
               start = millis();
               uint8_t	byteRead = Serial.read();
               char lineRead[];
-              byteInLine=0; //keeps track of the position of the  byte that's read in the lineRead char array
-              waypointCount=0;//keeps track of the position to add the waypoint in the shared arrays
+
+              byteInLine=0;
+              start_index=0;
+              waypointCount=0;
               timeout = true;
               while (millis()-start < 1000 && timeout){ //lines are separated by newline \n character
                 lineRead[byteInLine] = byteRead;
-                if (byteRead == '\n') {
-                  timeout = false
+
+                if (byteRead == 'W') {
+                  start_index = byteInLine + 2;
+                }
+                else if (byteRead == '\n' && start_index != 0) {
+                  timeout = false;
                   break;
                 }
+
                 byteRead = Serial.read();
                 byteInLine++;
               }
@@ -229,18 +236,50 @@ int main() {
                 client = REQUEST;
               }
               else {
+                Serial.write('A');
+                Serial.write('\n');
+                Serial.flush();
                 //thanks to Jason Cannon for the idea to use strtol()
                 char* pointer; //helps to separate the string by space
-                shared.waypoints[waypointCount].lat= strtol(&lineRead, &pointer, 10);
-                shared.waypoints[waypointCount].lon= strtol(&pointer, NULL, 10);
+                shared.waypoints[waypointCount].lat= strtol(&lineRead[start_index], &pointer, 10);
+                shared.waypoints[waypointCount].lon= strtol(pointer, NULL, 10);
                 waypointCount++;
               }
 
+              if (shared.num_waypoints == waypointCount) {
+                client = END;
+              }
 
           }
 
           else if (client == END) {
-            break;
+
+            char buffer[129];
+            int used = 0;
+
+
+            start = millis();
+            finished = false;
+
+            while (millis()-start < 1000) {
+              while (Serial.available() == 0 && millis()-start < 1000);
+
+              buffer[used] = Serial.read();
+              ++used;
+
+              if (buffer[used-2] == 'E' && buffer[used-1] == '\n'){
+                finished = true;
+                break;
+              }
+            }
+
+            if (finished) {
+              break;
+            }
+            else {
+              client = REQUEST;
+            }
+
           }
 
         }
