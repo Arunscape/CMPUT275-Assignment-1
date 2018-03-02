@@ -235,6 +235,9 @@ int main() {
                 client = REQUEST
               }
               else {
+                Serial.write('A');
+                Serial.write('\n');
+                Serial.flush();
                 //thanks to Jason Cannon for the idea to use strtol()
                 char* pointer; //helps to separate the string by space
                 shared.waypoints[waypointCount].lat= strtol(&lineRead[start_index], &pointer, 10);
