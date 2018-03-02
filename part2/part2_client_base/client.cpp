@@ -220,10 +220,10 @@ int main() {
                 lineRead[byteInLine] = byteRead;
 
                 if (byteRead == 'W') {
-                  start_index = byteInLine + 2
+                  start_index = byteInLine + 2;
                 }
                 else if (byteRead == '\n' && start_index != 0) {
-                  timeout = false
+                  timeout = false;
                   break;
                 }
 
@@ -232,7 +232,7 @@ int main() {
               }
 
               if (timeout == true) {
-                client = REQUEST
+                client = REQUEST;
               }
               else {
                 Serial.write('A');
@@ -245,11 +245,40 @@ int main() {
                 waypointCount++;
               }
 
+              if (shared.num_waypoints == waypointCount) {
+                client = END;
+              }
 
           }
 
           else if (client == END) {
-            break;
+
+            char buffer[129];
+            int used = 0;
+
+
+            start = millis();
+            finished = false;
+
+            while (millis()-start < 1000) {
+              while (Serial.available() == 0 && millis()-start < 1000);
+
+              buffer[used] = Serial.read();
+              ++used;
+
+              if (buffer[used-2] == 'E' && buffer[used-1] == '\n'){
+                finished = true;
+                break;
+              }
+            }
+
+            if (finished) {
+              break;
+            }
+            else {
+              client = REQUEST;
+            }
+
           }
 
         }
