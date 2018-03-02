@@ -3,6 +3,7 @@
 #include <SD.h>
 #include "consts_and_types.h"
 #include "map_drawing.h"
+#include <stdlib.h>
 
 #include <stdlib.h>//contains the strtol function
 
@@ -150,7 +151,7 @@ int main() {
         // TODO: communicate with the server to get the waypoints
 
         enum State {REQUEST, WAYPOINT};
-        State client = REQUEST
+        State client = REQUEST;
 
         while (true) {
 
@@ -178,19 +179,32 @@ int main() {
               buffer[used] = Serial.read();
               ++used;
 
-              // line completely sent
-              if (buffer[used-1] == '\n') && (buffer[used-4] == 'N' ) {
-                shared.num_waypoints = buffer[used-2];
+              // stores start index of number
+              int start_index=0;
+
+              if (buffer[used-1] == 'N'){
+                start_index = used + 1;
+              }
+              else if (buffer[used-1] == '\n' && start_index != 0) {
+
+                // reads up to the new line
+                shared.num_waypoints = strtol(&buff[start_index],NULL,10);
                 Serial.write('A');
                 Serial.write('\n');
-                used = 0;
-                client = WAYPOINT
+                Serial.flush();
+                client = WAYPOINT;
                 break;
               }
+
             }
 
           else if (client == WAYPOINT) {
+            
 
+          }
+
+          else if (client == END) {
+            break;
           }
 
         }
