@@ -222,7 +222,7 @@ int main() {
                 if (byteRead == 'W') {
                   start_index = byteInLine + 2
                 }
-                else if (byteRead == '\n') {
+                else if (byteRead == '\n' && start_index != 0) {
                   timeout = false
                   break;
                 }
