@@ -146,33 +146,54 @@ int main() {
         end = get_cursor_lonlat();
 
         // TODO: communicate with the server to get the waypoints
-        Serial.print("R ")
-        Serial.print(start.lat)
-        Serial.print(" ")
-        Serial.print(start.lon)
-        Serial.print(" ")
-        Serial.print(end.lat)
-        Serial.print(" ")
-        Serial.print(end.lon)
-        Serial.flush()
 
-        char buffer[129];
-        int used = 0;
+        enum State {REQUEST, WAYPOINT};
+        State client = REQUEST
 
         while (true) {
-          while (Serial.available() == 0);
 
-          buffer[used] = Serial.read();
-          ++used;
+          if (client == REQUEST) {
+            Serial.write('R ');
+            Serial.write(start.lat);
+            Serial.write(' ');
+            Serial.write(start.lon);
+            Serial.write(' ');
+            Serial.write(end.lat);
+            Serial.write(' ');
+            Serial.write(end.lon);
+            Serial.write('\n');
+            Serial.flush();
 
-          if (buffer[used-1] == '\n') {
-            buffer[used-1] = buffer[used] = buffer[used+1] = '.';
-            buffer[used+2] = '\n';
-            buffer[used+3] = '\0';
-            Serial.write(buffer); // does not add \r\n
-            used = 0;
+            char buffer[129];
+            int used = 0;
+
+            start = millis();
+
+            // first timeout is 10 seconds
+            while (millis()-start < 10000) {
+              while (Serial.available() == 0 && millis()-start < 10000);
+
+              buffer[used] = Serial.read();
+              ++used;
+
+              // line completely sent
+              if (buffer[used-1] == '\n') && (buffer[used-4] == 'N' ) {
+                shared.num_waypoints = buffer[used-2];
+                Serial.write('A');
+                Serial.write('\n');
+                used = 0;
+                client = WAYPOINT
+                break;
+              }
+            }
+
+          else if (client == WAYPOINT) {
+
           }
+
         }
+
+
 
         // now we have stored the path length in
         // shared.num_waypoints and the waypoints themselves in
@@ -202,8 +223,6 @@ int main() {
 
         routefound=true
         //~Arun
-
-        // TODO: communicate with the server to get the waypoints
 
         curr_mode = WAIT_FOR_START;
 
