@@ -213,14 +213,20 @@ int main() {
               uint8_t	byteRead = Serial.read();
               char lineRead[];
               byteInLine=0;
+              start_index=0;
               waypointCount=0;
               timeout = true;
               while (millis()-start < 1000 && timeout){ //lines are separated by newline \n character
                 lineRead[byteInLine] = byteRead;
-                if (byteRead == '\n') {
+
+                if (byteRead == 'W') {
+                  start_index = byteInLine + 2
+                }
+                else if (byteRead == '\n') {
                   timeout = false
                   break;
                 }
+
                 byteRead = Serial.read();
                 byteInLine++;
               }
@@ -231,8 +237,8 @@ int main() {
               else {
                 //thanks to Jason Cannon for the idea to use strtol()
                 char* pointer; //helps to separate the string by space
-                shared.waypoints[waypointCount].lat= strtol(&lineRead, &pointer, 10);
-                shared.waypoints[waypointCount].lon= strtol(&pointer, NULL, 10);
+                shared.waypoints[waypointCount].lat= strtol(&lineRead[start_index], &pointer, 10);
+                shared.waypoints[waypointCount].lon= strtol(pointer, NULL, 10);
                 waypointCount++;
               }
 
