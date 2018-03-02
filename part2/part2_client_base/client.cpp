@@ -199,8 +199,29 @@ int main() {
             }
 
           else if (client == WAYPOINT) {
-            
+            // now we have stored the path length in
+            // shared.num_waypoints and the waypoints themselves in
+            // the shared.waypoints[] array, switch back to asking for the
+            // start point of a new request
 
+            //The code for reading from seria will be something like:
+
+            // WORKS IN THEORY NEED TO TEST THIS
+            //handles drawing the route
+            while()//stuff
+              uint8_t	byteRead = Serial.read();
+              char lineRead[];
+              count=0;
+              while (byteRead != "\n"){ //lines are separated by newline \n character
+                lineRead[count] = byteRead;
+                byteRead = Serial.read();
+                count++;
+              }
+
+              //thanks to Jason Cannon for the idea to use strtol()
+              char* pointer; //helps to separate the string by space
+              shared.waypoints[i].lat= strtol(&lineRead, &pointer, 10);
+              shared.waypoints[i].lon= strtol(&pointer, NULL, 10);
           }
 
           else if (client == END) {
@@ -211,29 +232,7 @@ int main() {
 
 
 
-        // now we have stored the path length in
-        // shared.num_waypoints and the waypoints themselves in
-        // the shared.waypoints[] array, switch back to asking for the
-        // start point of a new request
 
-        //The code for reading from seria will be something like:
-
-        // WORKS IN THEORY NEED TO TEST THIS
-        //handles drawing the route
-        for(i=0,i<shared.num_waypoints,i++){
-          uint8_t	byteRead = Serial.read();
-          char lineRead[];
-          count=0;
-          while (byteRead != "\n"){ //lines are separated by newline \n character
-            lineRead[count] = byteRead;
-            byteRead = Serial.read();
-            count++;
-          }
-
-          //thanks to Jason Cannon for the idea to use strtol()
-          char* pointer; //helps to separate the string by space
-          shared.waypoints[i].lat= strtol(&lineRead, &pointer, 10);
-          shared.waypoints[i].lon= strtol(&pointer, NULL, 10);
 
         //TODO make a variable that tells me if a valid route was found plz
 
