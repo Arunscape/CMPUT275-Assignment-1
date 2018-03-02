@@ -4,6 +4,8 @@
 #include "consts_and_types.h"
 #include "map_drawing.h"
 
+#include <stdlib.h>//contains the strtol function
+
 // the variables to be shared across the project, they are declared here!
 shared_vars shared;
 
@@ -203,25 +205,25 @@ int main() {
         //The code for reading from seria will be something like:
 
         // WORKS IN THEORY NEED TO TEST THIS
-      //   for(i=0,i<shared.num_waypoints,i++){
-      //     uint8_t	byteRead = Serial.read();
-      //     count=0
-      //     while (byteRead != " "){
-      //       shared.waypoints[i].lat[count]=byteRead
-      //       byteRead = Serial.read();
-      //       count++
-      //     }
-      //     count=0
-      //     while (byteRead != "\0"){
-      //       shared.waypoints[i].lon[count]=byteRead
-      //       byteRead = Serial.read();
-      //       count++
-      //   }
-      // }
+        //handles drawing the route
+        for(i=0,i<shared.num_waypoints,i++){
+          uint8_t	byteRead = Serial.read();
+          char lineRead[];
+          count=0;
+          while (byteRead != "\n"){ //lines are separated by newline \n character
+            lineRead[count] = byteRead;
+            byteRead = Serial.read();
+            count++;
+          }
+
+          //thanks to Jason Cannon for the idea to use strtol()
+          char* pointer; //helps to separate the string by space
+          shared.waypoints[i].lat= strtol(&lineRead, &pointer, 10);
+          shared.waypoints[i].lon= strtol(&pointer, NULL, 10);
 
         //TODO make a variable that tells me if a valid route was found plz
 
-        routefound=true
+        routefound=true;
         //~Arun
 
         curr_mode = WAIT_FOR_START;
