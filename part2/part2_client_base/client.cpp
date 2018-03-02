@@ -208,20 +208,33 @@ int main() {
 
             // WORKS IN THEORY NEED TO TEST THIS
             //handles drawing the route
-            while()//stuff
+
+              start = millis();
               uint8_t	byteRead = Serial.read();
               char lineRead[];
               count=0;
-              while (byteRead != "\n"){ //lines are separated by newline \n character
+              timeout = true;
+              while (millis()-start < 1000 && timeout){ //lines are separated by newline \n character
                 lineRead[count] = byteRead;
+                if (byteRead == '\n') {
+                  timeout = false
+                  break;
+                }
                 byteRead = Serial.read();
                 count++;
               }
 
-              //thanks to Jason Cannon for the idea to use strtol()
-              char* pointer; //helps to separate the string by space
-              shared.waypoints[i].lat= strtol(&lineRead, &pointer, 10);
-              shared.waypoints[i].lon= strtol(&pointer, NULL, 10);
+              if (timeout == true) {
+                client = REQUEST
+              }
+              else {
+                //thanks to Jason Cannon for the idea to use strtol()
+                char* pointer; //helps to separate the string by space
+                shared.waypoints[i].lat= strtol(&lineRead, &pointer, 10);
+                shared.waypoints[i].lon= strtol(&pointer, NULL, 10);
+              }
+
+
           }
 
           else if (client == END) {
