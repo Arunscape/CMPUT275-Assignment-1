@@ -335,7 +335,7 @@ int main() {
         status_message("TO?");
       }
 
-      // redraw the map and cursor
+      // redraw the map, cursor and route
       draw_map();
       draw_cursor();
       draw_route();
