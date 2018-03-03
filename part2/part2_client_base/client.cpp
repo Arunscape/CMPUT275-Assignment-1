@@ -152,15 +152,20 @@ int main() {
         while (true) {
 
           if (client == REQUEST) {
+            char bu[30];
             Serial.write('R');
             Serial.write(' ');
-            Serial.write(start.lat);
+            itoa(start.lat,bu,10);
+            Serial.write(bu);
             Serial.write(' ');
-            Serial.write(start.lon);
+            itoa(start.lon,bu,10);
+            Serial.write(bu);
             Serial.write(' ');
-            Serial.write(end.lat);
+            itoa(end.lat,bu,10);
+            Serial.write(bu);
             Serial.write(' ');
-            Serial.write(end.lon);
+            itoa(end.lon,bu,10);
+            Serial.write(bu);
             Serial.write('\n');
             Serial.flush();
 
