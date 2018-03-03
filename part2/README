@@ -16,6 +16,37 @@ In this second part we implement the following functionality:
 
 Usage Instructions
 -------------------------------------------------------------------------------
+
+Wiring Instructions
+-------------------------------------------------------------------------------
+Display Pin     Arduino Mega Pin
+1 GND           BB GND bus
+2 Vin           BB Vcc (+ive) bus
+
+4 CLK           Pin 52
+5 MISO          Pin 50
+6 MOSI          Pin 51
+7 CS            Pin 10
+8 D/C           Pin 9
+
+19 CCS          Pin 6
+
+Zoom in and out buttons:
+
+Button          Arduino Mega Pin
+Zoom In         Pin 2
+Zoom Out        Pin 3
+
+Joystick connections:
+
+Joystick Pin    Arduino Mega Pin
++5v             Vcc
+GND             GND
+VRx             Analog 1
+VRy             Analog 0
+SW              Pin 8
+
+--------------------------------------------------------------------------------
 Files from yeg-lcd.zip should be moved to the root of the sd card in the Arduino.
 
 Open a terminal in the directory of the client files
@@ -65,6 +96,9 @@ Modifications to files:
   ```
 
 * client.cpp
+  draw_route() function, line 94
+
+  handshake protocol implemented in lines 115-323
 
 Acknowledgments:
 --------------------------------------------------------------------------------
