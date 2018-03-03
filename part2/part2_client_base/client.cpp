@@ -188,7 +188,7 @@ int main() {
               else if (buffer[used-1] == '\n' && start_index != 0) {
 
                 // reads up to the new line
-                shared.num_waypoints = strtol(&buff[start_index],NULL,10);
+                shared.num_waypoints = strtol(&buffer[start_index],NULL,10);
                 Serial.write('A');
                 Serial.write('\n');
                 Serial.flush();
@@ -213,13 +213,13 @@ int main() {
             // WORKS IN THEORY NEED TO TEST THIS
             //handles drawing the route
 
-            start = millis();
+            uint32_t start = millis();
             uint8_t	byteRead = Serial.read();
-            char lineRead[];
-            byteInLine=0;
-            start_index=0;
-            waypointCount=0;
-            timeout = true;
+            char lineRead[]="";
+            int byteInLine=0;
+            int start_index=0;
+            int waypointCount=0;
+            bool timeout = true;
             while (millis()-start < 1000 && timeout){ //lines are separated by newline \n character
               lineRead[byteInLine] = byteRead;
 
@@ -262,7 +262,7 @@ int main() {
 
 
             start = millis();
-            finished = false;
+            bool finished = false;
 
             while (millis()-start < 1000) {
               while (Serial.available() == 0 && millis()-start < 1000);
@@ -322,8 +322,8 @@ int main() {
           //  - max_waypoints (a global const, not in the shared_vars struct):
           //    the maximum number of waypoints that can be stored in the
           //    shared.waypoints[] array
-          for(i=0,i<shared.num_waypoints,i++){
-            Serial.println(shared.waypoints[i]) //wtf does this look like?
+          for(int i=0,i<shared.num_waypoints,i++){
+            Serial.println(shared.waypoints[i]); //wtf does this look like?
 
             // in case I fuck something up
             // x0=shared.waypoints[i].lat
@@ -332,11 +332,11 @@ int main() {
             // x1=shared.waypoints[i+1].lat
             // y1=shared.waypoints[i+1].lat
 
-            x0=longitude_to_x(map_number,shared.waypoints[i].lat)
-            y0=lattitude_to_y(map_number,shared.waypoints[i].lon)
+            x0=longitude_to_x(map_number,shared.waypoints[i].lat);
+            y0=lattitude_to_y(map_number,shared.waypoints[i].lon);
 
-            x1=longitude_to_x(map_number,shared.waypoints[i+1].lat)
-            y1=lattitude_to_y(map_number,shared.waypoints[i+1].lat)
+            x1=longitude_to_x(map_number,shared.waypoints[i+1].lat);
+            y1=lattitude_to_y(map_number,shared.waypoints[i+1].lat);
             tft.drawLine(x0, y0, x1, y1, 0x001F);//0x001F is BLUE
           }
         }
