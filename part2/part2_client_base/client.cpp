@@ -3,9 +3,6 @@
 #include <SD.h>
 #include "consts_and_types.h"
 #include "map_drawing.h"
-#include <stdlib.h>
-
-#include <stdlib.h>//contains the strtol function
 
 // the variables to be shared across the project, they are declared here!
 shared_vars shared;
@@ -40,12 +37,12 @@ void setup() {
 
   // initialize SD card
   if (!SD.begin(clientpins::sd_cs)) {
-    Serial.println("Initialization has failed. Things to check:");
-    Serial.println("* Is a card inserted properly?");
-    Serial.println("* Is your wiring correct?");
-    Serial.println("* Is the chipSelect pin the one for your shield or module?");
+      Serial.println("Initialization has failed. Things to check:");
+      Serial.println("* Is a card inserted properly?");
+      Serial.println("* Is your wiring correct?");
+      Serial.println("* Is the chipSelect pin the one for your shield or module?");
 
-    while (1) {} // nothing to do here, fix the card issue and retry
+      while (1) {} // nothing to do here, fix the card issue and retry
   }
 
   // initialize the shared variables, from map_drawing.h
@@ -149,7 +146,6 @@ int main() {
         end = get_cursor_lonlat();
 
         // TODO: communicate with the server to get the waypoints
-
         enum State {REQUEST, WAYPOINT, END};
         State client = REQUEST;
 
@@ -294,46 +290,51 @@ int main() {
         // wait until the joystick button is no longer pushed
         while (digitalRead(clientpins::joy_button_pin) == LOW) {}
       }
+      // now we have stored the path length in
+      // shared.num_waypoints and the waypoints themselves in
+      // the shared.waypoints[] array, switch back to asking for the
+      // start point of a new request
+      curr_mode = WAIT_FOR_START;
 
-      if (shared.redraw_map) {
-        // redraw the status message
-        if (curr_mode == WAIT_FOR_START) {
-          status_message("FROM?");
-        }
-        else {
-          status_message("TO?");
-        }
-
-        // redraw the map and cursor
-        draw_map();
-        draw_cursor();
-
-        // TODO: draw the route if there is one
-          // In particular, you are mostly concerned with
-          //  - shared.num_waypoints: the number of waypoints on the path
-          //  - shared.waypoints[]: the lat/lon pairs of these waypoints
-          //  - max_waypoints (a global const, not in the shared_vars struct):
-          //    the maximum number of waypoints that can be stored in the
-          //    shared.waypoints[] array
-          for(int i=0; i<shared.num_waypoints; i++){
-            // in case I fuck something up
-            // x0=shared.waypoints[i].lat
-            // y0-shared.waypoints[i].lon
-            //
-            // x1=shared.waypoints[i+1].lat
-            // y1=shared.waypoints[i+1].lat
-
-            int x0=longitude_to_x(shared.map_number,shared.waypoints[i].lon);
-            int y0=latitude_to_y(shared.map_number,shared.waypoints[i].lat);
-
-            int x1=longitude_to_x(shared.map_number,shared.waypoints[i+1].lon);
-            int y1=latitude_to_y(shared.map_number,shared.waypoints[i+1].lat);
-            tft.drawLine(x0, y0, x1, y1, 0x001F);//0x001F is BLUE
-          }
-        }
-      }
+      // wait until the joystick button is no longer pushed
+      while (digitalRead(clientpins::joy_button_pin) == LOW) {}
     }
 
-    Serial.flush();
-    return 0;
+
+    if (shared.redraw_map) {
+      // redraw the status message
+      if (curr_mode == WAIT_FOR_START) {
+        status_message("FROM?");
+      }
+      else {
+        status_message("TO?");
+      }
+
+      // redraw the map and cursor
+      draw_map();
+      draw_cursor();
+
+      // TODO: draw the route if there is one
+
+      //    shared.waypoints[] array
+      for(int i=0; i<shared.num_waypoints; i++){
+        // in case I fuck something up
+        // x0=shared.waypoints[i].lat
+        // y0-shared.waypoints[i].lon
+        //
+        // x1=shared.waypoints[i+1].lat
+        // y1=shared.waypoints[i+1].lat
+
+        int x0=longitude_to_x(shared.map_number,shared.waypoints[i].lon);
+        int y0=latitude_to_y(shared.map_number,shared.waypoints[i].lat);
+
+        int x1=longitude_to_x(shared.map_number,shared.waypoints[i+1].lon);
+        int y1=latitude_to_y(shared.map_number,shared.waypoints[i+1].lat);
+        tft.drawLine(x0, y0, x1, y1, 0x001F);//0x001F is BLUE
+      }
+    }
   }
+
+  Serial.flush();
+  return 0;
+}
