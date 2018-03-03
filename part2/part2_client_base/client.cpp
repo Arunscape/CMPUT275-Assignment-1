@@ -40,12 +40,12 @@ void setup() {
 
   // initialize SD card
   if (!SD.begin(clientpins::sd_cs)) {
-      Serial.println("Initialization has failed. Things to check:");
-      Serial.println("* Is a card inserted properly?");
-      Serial.println("* Is your wiring correct?");
-      Serial.println("* Is the chipSelect pin the one for your shield or module?");
+    Serial.println("Initialization has failed. Things to check:");
+    Serial.println("* Is a card inserted properly?");
+    Serial.println("* Is your wiring correct?");
+    Serial.println("* Is the chipSelect pin the one for your shield or module?");
 
-      while (1) {} // nothing to do here, fix the card issue and retry
+    while (1) {} // nothing to do here, fix the card issue and retry
   }
 
   // initialize the shared variables, from map_drawing.h
@@ -198,21 +198,20 @@ int main() {
 
             }
 
-          else if (client == WAYPOINT) {
-            // now we have stored the path length in
-            // shared.num_waypoints and the waypoints themselves in
-            // the shared.waypoints[] array, switch back to asking for the
-            // start point of a new request
+            else if (client == WAYPOINT) {
+              // now we have stored the path length in
+              // shared.num_waypoints and the waypoints themselves in
+              // the shared.waypoints[] array, switch back to asking for the
+              // start point of a new request
 
-            //The code for reading from seria will be something like:
+              //The code for reading from seria will be something like:
 
-            // WORKS IN THEORY NEED TO TEST THIS
-            //handles drawing the route
+              // WORKS IN THEORY NEED TO TEST THIS
+              //handles drawing the route
 
               start = millis();
               uint8_t	byteRead = Serial.read();
               char lineRead[];
-
               byteInLine=0;
               start_index=0;
               waypointCount=0;
@@ -250,90 +249,100 @@ int main() {
                 client = END;
               }
 
-          }
+            }
 
-          else if (client == END) {
+            else if (client == END) {
 
-            char buffer[129];
-            int used = 0;
+              char buffer[129];
+              int used = 0;
 
 
-            start = millis();
-            finished = false;
+              start = millis();
+              finished = false;
 
-            while (millis()-start < 1000) {
-              while (Serial.available() == 0 && millis()-start < 1000);
+              while (millis()-start < 1000) {
+                while (Serial.available() == 0 && millis()-start < 1000);
 
-              buffer[used] = Serial.read();
-              ++used;
+                buffer[used] = Serial.read();
+                ++used;
 
-              if (buffer[used-2] == 'E' && buffer[used-1] == '\n'){
-                finished = true;
+                if (buffer[used-2] == 'E' && buffer[used-1] == '\n'){
+                  finished = true;
+                  break;
+                }
+              }
+
+              if (finished) {
                 break;
               }
-            }
+              else {
+                client = REQUEST;
+              }
 
-            if (finished) {
-              break;
-            }
-            else {
-              client = REQUEST;
             }
 
           }
 
+
+
+
+
+          //TODO make a variable that tells me if a valid route was found plz
+
+          routefound=true;
+          //~Arun
+
+
         }
-
-
 
         curr_mode = WAIT_FOR_START;
 
         // wait until the joystick button is no longer pushed
         while (digitalRead(clientpins::joy_button_pin) == LOW) {}
       }
-    }
 
-    if (shared.redraw_map) {
-      // redraw the status message
-      if (curr_mode == WAIT_FOR_START) {
-        status_message("FROM?");
-      }
-      else {
-        status_message("TO?");
-      }
+      if (shared.redraw_map) {
+        // redraw the status message
+        if (curr_mode == WAIT_FOR_START) {
+          status_message("FROM?");
+        }
+        else {
+          status_message("TO?");
+        }
 
-      // redraw the map and cursor
-      draw_map();
-      draw_cursor();
+        // redraw the map and cursor
+        draw_map();
+        draw_cursor();
 
-      // TODO: draw the route if there is one
-        // In particular, you are mostly concerned with
-        //  - shared.num_waypoints: the number of waypoints on the path
-        //  - shared.waypoints[]: the lat/lon pairs of these waypoints
-        //  - max_waypoints (a global const, not in the shared_vars struct):
-        //    the maximum number of waypoints that can be stored in the
-        //    shared.waypoints[] array
-        for(i=0,i<shared.num_waypoints,i++){
-          Serial.println(shared.waypoints[i]); //wtf does this look like?
+        // TODO: draw the route if there is one
+        if(route){//if a valid route was found
+          // In particular, you are mostly concerned with
+          //  - shared.num_waypoints: the number of waypoints on the path
+          //  - shared.waypoints[]: the lat/lon pairs of these waypoints
+          //  - max_waypoints (a global const, not in the shared_vars struct):
+          //    the maximum number of waypoints that can be stored in the
+          //    shared.waypoints[] array
+          for(i=0,i<shared.num_waypoints,i++){
+            Serial.println(shared.waypoints[i]) //wtf does this look like?
 
-          // in case I fuck something up
-          // x0=shared.waypoints[i].lat
-          // y0-shared.waypoints[i].lon
-          //
-          // x1=shared.waypoints[i+1].lat
-          // y1=shared.waypoints[i+1].lat
+            // in case I fuck something up
+            // x0=shared.waypoints[i].lat
+            // y0-shared.waypoints[i].lon
+            //
+            // x1=shared.waypoints[i+1].lat
+            // y1=shared.waypoints[i+1].lat
 
-          x0=longitude_to_x(map_number,shared.waypoints[i].lat);
-          y0=lattitude_to_y(map_number,shared.waypoints[i].lon);
+            x0=longitude_to_x(map_number,shared.waypoints[i].lat)
+            y0=lattitude_to_y(map_number,shared.waypoints[i].lon)
 
-          x1=longitude_to_x(map_number,shared.waypoints[i+1].lat);
-          y1=lattitude_to_y(map_number,shared.waypoints[i+1].lat);
-          tft.drawLine(x0, y0, x1, y1, 0x001F);//0x001F is BLUE
+            x1=longitude_to_x(map_number,shared.waypoints[i+1].lat)
+            y1=lattitude_to_y(map_number,shared.waypoints[i+1].lat)
+            tft.drawLine(x0, y0, x1, y1, 0x001F);//0x001F is BLUE
+          }
         }
       }
     }
-  }
 
-  Serial.flush();
-  return 0;
-}
+    Serial.flush();
+    return 0;
+  }
