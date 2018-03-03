@@ -150,7 +150,7 @@ int main() {
 
         // TODO: communicate with the server to get the waypoints
 
-        enum State {REQUEST, WAYPOINT};
+        enum State {REQUEST, WAYPOINT, END};
         State client = REQUEST;
 
         while (true) {
@@ -170,11 +170,11 @@ int main() {
             char buffer[129];
             int used = 0;
 
-            start = millis();
+            uint32_t startime = millis();
 
             // first timeout is 10 seconds
-            while (millis()-start < 10000) {
-              while (Serial.available() == 0 && millis()-start < 10000);
+            while (millis()-startime < 10000) {
+              while (Serial.available() == 0 && millis()-startime < 10000);
 
               buffer[used] = Serial.read();
               ++used;
@@ -213,14 +213,14 @@ int main() {
             // WORKS IN THEORY NEED TO TEST THIS
             //handles drawing the route
 
-            uint32_t start = millis();
+            uint32_t startime = millis();
             uint8_t	byteRead = Serial.read();
             char lineRead[]="";
             int byteInLine=0;
             int start_index=0;
             int waypointCount=0;
             bool timeout = true;
-            while (millis()-start < 1000 && timeout){ //lines are separated by newline \n character
+            while (millis()-startime < 1000 && timeout){ //lines are separated by newline \n character
               lineRead[byteInLine] = byteRead;
 
               if (byteRead == 'W') {
@@ -261,11 +261,11 @@ int main() {
             int used = 0;
 
 
-            start = millis();
+            uint32_t startime = millis();
             bool finished = false;
 
-            while (millis()-start < 1000) {
-              while (Serial.available() == 0 && millis()-start < 1000);
+            while (millis()-startime < 1000) {
+              while (Serial.available() == 0 && millis()-startime < 1000);
 
               buffer[used] = Serial.read();
               ++used;
@@ -285,12 +285,6 @@ int main() {
 
           }
 
-
-
-          //TODO make a variable that tells me if a valid route was found plz
-
-          routefound=true;
-          //~Arun
 
 
         }
@@ -315,14 +309,13 @@ int main() {
         draw_cursor();
 
         // TODO: draw the route if there is one
-        if(route){//if a valid route was found
           // In particular, you are mostly concerned with
           //  - shared.num_waypoints: the number of waypoints on the path
           //  - shared.waypoints[]: the lat/lon pairs of these waypoints
           //  - max_waypoints (a global const, not in the shared_vars struct):
           //    the maximum number of waypoints that can be stored in the
           //    shared.waypoints[] array
-          for(int i=0,i<shared.num_waypoints,i++){
+          for(int i=0; i<shared.num_waypoints; i++){
             Serial.println(shared.waypoints[i]); //wtf does this look like?
 
             // in case I fuck something up
@@ -346,4 +339,3 @@ int main() {
     Serial.flush();
     return 0;
   }
-}
