@@ -171,6 +171,7 @@ int main() {
             int used = 0;
 
             uint32_t startime = millis();
+            int start_index=0;
 
             // first timeout is 10 seconds
             while (millis()-startime < 10000) {
@@ -179,8 +180,6 @@ int main() {
               buffer[used] = Serial.read();
               ++used;
 
-              // stores start index of number
-              int start_index=0;
 
               if (buffer[used-1] == 'N'){
                 start_index = used + 1;
@@ -214,13 +213,15 @@ int main() {
             //handles drawing the route
 
             uint32_t startime = millis();
-            uint8_t	byteRead = Serial.read();
-            char lineRead[]="";
+            char lineRead[129];
             int byteInLine=0;
             int start_index=0;
             int waypointCount=0;
             bool timeout = true;
+
             while (millis()-startime < 1000 && timeout){ //lines are separated by newline \n character
+              while (Serial.available() == 0 && millis()-startime < 10000);
+              uint8_t	byteRead = Serial.read();
               lineRead[byteInLine] = byteRead;
 
               if (byteRead == 'W') {
@@ -231,7 +232,6 @@ int main() {
                 break;
               }
 
-              byteRead = Serial.read();
               byteInLine++;
             }
 
