@@ -316,8 +316,6 @@ int main() {
           //    the maximum number of waypoints that can be stored in the
           //    shared.waypoints[] array
           for(int i=0; i<shared.num_waypoints; i++){
-            Serial.println(shared.waypoints[i]); //wtf does this look like?
-
             // in case I fuck something up
             // x0=shared.waypoints[i].lat
             // y0-shared.waypoints[i].lon
