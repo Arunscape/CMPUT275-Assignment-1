@@ -167,12 +167,14 @@ int main() {
         // and then communicate with the server to get the path
         end = get_cursor_lonlat();
 
-        // TODO: communicate with the server to get the waypoints
+        // states for server-client communication
         enum State {REQUEST, WAYPOINT, END};
         State client = REQUEST;
         int waypointCount=0; //keep track of the number of waypoints received
+
         while (true) {
 
+          // client will constantly send requests in this state
           if (client == REQUEST) {
             char charbuffer[30];
             Serial.write('R');
@@ -204,10 +206,11 @@ int main() {
               buffer[used] = Serial.read();
               ++used;
 
-
+              //request starts
               if (buffer[used-1] == 'N'){
                 start_index = used + 1;
               }
+              //request is valid
               else if (buffer[used-1] == '\n' && start_index != 0) {
 
                 // reads up to the new line
@@ -221,16 +224,10 @@ int main() {
               }
 
             }
-
-
-
           }
 
+          // state for the receipt of waypoints
           else if (client == WAYPOINT) {
-            // now we have stored the path length in
-            // shared.num_waypoints and the waypoints themselves in
-            // the shared.waypoints[] array, switch back to asking for the
-            // start point of a new request
 
             uint32_t startime = millis();
             char lineRead[129];
@@ -244,7 +241,7 @@ int main() {
               lineRead[byteInLine] = byteRead;
 
               if (byteRead == 'W') {
-                start_index = byteInLine + 2;
+                start_index = byteInLine + 2; // start of the int will be 2 ahead of the W character
               }
               else if (byteRead == '\n' && start_index != 0) {
                 timeout = false;
@@ -269,17 +266,14 @@ int main() {
               waypointCount++;
             }
 
-            //debugging
-            // tft.setTextSize(1);
-            // // tft.fillScreen(0);
-            // tft.setCursor(10*waypointCount,15);
-            // tft.println(waypointCount);
+            // we have received the anticipated number of waypoints
             if (shared.num_waypoints == waypointCount) {
               client = END; //END state
             }
 
           }
 
+          // state where client looks for E character
           else if (client == END) {
 
             char buffer[129];
@@ -297,7 +291,6 @@ int main() {
 
               if (buffer[used-2] == 'E' && buffer[used-1] == '\n'){
                 finished = true;
-                // tft.fillScreen(0);
                 break;
               }
             }
@@ -311,9 +304,6 @@ int main() {
             }
 
           }
-
-
-
         }
 
 
