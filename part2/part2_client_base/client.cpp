@@ -144,6 +144,7 @@ int main() {
         // if we were waiting for the end point, record it
         // and then communicate with the server to get the path
         end = get_cursor_lonlat();
+        tft.fillScreen(0);
 
         // TODO: communicate with the server to get the waypoints
         enum State {REQUEST, WAYPOINT, END};
@@ -285,19 +286,13 @@ int main() {
 
         }
 
+        Serial.println("Bitch ewe here");
         curr_mode = WAIT_FOR_START;
 
         // wait until the joystick button is no longer pushed
         while (digitalRead(clientpins::joy_button_pin) == LOW) {}
       }
-      // now we have stored the path length in
-      // shared.num_waypoints and the waypoints themselves in
-      // the shared.waypoints[] array, switch back to asking for the
-      // start point of a new request
-      curr_mode = WAIT_FOR_START;
-
-      // wait until the joystick button is no longer pushed
-      while (digitalRead(clientpins::joy_button_pin) == LOW) {}
+    
     }
 
 
