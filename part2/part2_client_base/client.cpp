@@ -148,7 +148,7 @@ int main() {
         // TODO: communicate with the server to get the waypoints
         enum State {REQUEST, WAYPOINT, END};
         State client = REQUEST;
-
+        int waypointCount=0;
         while (true) {
 
           if (client == REQUEST) {
@@ -194,6 +194,7 @@ int main() {
                 Serial.write('\n');
                 Serial.flush();
                 client = WAYPOINT;
+                waypointCount=0;
                 break;
               }
 
@@ -218,7 +219,6 @@ int main() {
             char lineRead[129];
             int byteInLine=0;
             int start_index=0;
-            int waypointCount=0;
             bool timeout = true;
 
             while (millis()-startime < 1000 && timeout){ //lines are separated by newline \n character
@@ -250,7 +250,9 @@ int main() {
               shared.waypoints[waypointCount].lon= strtol(pointer, NULL, 10);
               waypointCount++;
             }
-
+            tft.setTextSize(5);
+            // tft.fillScreen(0);
+            tft.print(waypointCount);
             if (shared.num_waypoints == waypointCount) {
               client = END;
             }
@@ -274,6 +276,7 @@ int main() {
 
               if (buffer[used-2] == 'E' && buffer[used-1] == '\n'){
                 finished = true;
+                // tft.fillScreen(0);
                 break;
               }
             }
@@ -317,6 +320,7 @@ int main() {
       // TODO: draw the route if there is one
 
       //    shared.waypoints[] array
+      tft.fillScreen(0);
       for(int i=0; i<shared.num_waypoints; i++){
         // in case I fuck something up
         // x0=shared.waypoints[i].lat
