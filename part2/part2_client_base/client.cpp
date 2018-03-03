@@ -144,7 +144,6 @@ int main() {
         // if we were waiting for the end point, record it
         // and then communicate with the server to get the path
         end = get_cursor_lonlat();
-        tft.fillScreen(0);
 
         // TODO: communicate with the server to get the waypoints
         enum State {REQUEST, WAYPOINT, END};
@@ -153,7 +152,8 @@ int main() {
         while (true) {
 
           if (client == REQUEST) {
-            Serial.write('R ');
+            Serial.write('R');
+            Serial.write(' ');
             Serial.write(start.lat);
             Serial.write(' ');
             Serial.write(start.lon);
@@ -286,13 +286,13 @@ int main() {
 
         }
 
-        Serial.println("Bitch ewe here");
+        tft.fillScreen(0);
         curr_mode = WAIT_FOR_START;
 
         // wait until the joystick button is no longer pushed
         while (digitalRead(clientpins::joy_button_pin) == LOW) {}
       }
-    
+
     }
 
 
