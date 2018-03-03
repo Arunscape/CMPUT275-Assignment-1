@@ -134,6 +134,8 @@ int main() {
         // if we were waiting for the start point, record it
         // and indicate we are waiting for the end point
         start = get_cursor_lonlat();
+        Serial.println(start.lon);
+        Serial.println(start.lat);
         curr_mode = WAIT_FOR_STOP;
         status_message("TO?");
 
@@ -291,7 +293,7 @@ int main() {
 
         }
 
-        tft.fillScreen(0);
+
         curr_mode = WAIT_FOR_START;
 
         // wait until the joystick button is no longer pushed

@@ -140,17 +140,18 @@ def server_talk():
                 continue
 
             decoded = decode_string(line)
+            print(decoded)
 
             if decoded[0] != 'R' or len(decoded) != 5: #if an invalid request is received
                 print("invalid request, restarting")
                 continue
 
-
+            print("Request received")
             startvertex = find_nearest_vertex(location, (int(decoded[1]),int(decoded[2])) )
             endvertex = find_nearest_vertex(location, (int(decoded[3]),int(decoded[4])) )
 
             path = least_cost_path(yeg_graph, startvertex, endvertex, cost)
-
+            print(len(path))
             out_line = "N " + str(len(path)) + "\n"
             ser.write(out_line.encode("ASCII"))
 
@@ -175,6 +176,8 @@ def server_talk():
 
             timeout = False
             for waypoint in path:
+                print("Sending waypoints")
+                print(waypoint)
                 out_line = "W " + str(location[waypoint][0]) + " " + str(location[waypoint][1]) + "\n"
                 ser.write(out_line.encode("ASCII"))
 
@@ -196,6 +199,7 @@ def server_talk():
                 continue
 
             #done sending all the waypoints, return to request waiting state
+            print('E')
             out_line = "E" + "\n"
             ser.write(out_line.encode("ASCII"))
 
