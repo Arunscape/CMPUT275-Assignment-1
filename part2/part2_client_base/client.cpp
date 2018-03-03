@@ -91,20 +91,18 @@ void process_input() {
   }
 }
 
-void draw_route(){
+void draw_route(){ //draws the route on the map on the arduino
   for(int i=0; i<shared.num_waypoints-1; i++){
-    // in case I fuck something up
-    // x0=shared.waypoints[i].lat
-    // y0-shared.waypoints[i].lon
-    //
-    // x1=shared.waypoints[i+1].lat
-    // y1=shared.waypoints[i+1].lat
 
     int x0=longitude_to_x(shared.map_number,shared.waypoints[i].lon)-shared.map_coords.x;
     int y0=latitude_to_y(shared.map_number,shared.waypoints[i].lat)-shared.map_coords.y;
+    //starting point to draw line
 
     int x1=longitude_to_x(shared.map_number,shared.waypoints[i+1].lon)-shared.map_coords.x;
     int y1=latitude_to_y(shared.map_number,shared.waypoints[i+1].lat)-shared.map_coords.y;
+    //ending point to draw line
+
+    //actually draw the line
     shared.tft->drawLine(x0, y0, x1, y1, 0x001F);//0x001F is BLUE
   }
 }
@@ -149,18 +147,22 @@ int main() {
     if (shared.joy_button_pushed) {
 
       if (curr_mode == WAIT_FOR_START) {
+        // wait until the joystick button is no longer pushed
         while (digitalRead(clientpins::joy_button_pin) == LOW) {}
+
         // if we were waiting for the start point, record it
         // and indicate we are waiting for the end point
         start = get_cursor_lonlat();
         curr_mode = WAIT_FOR_STOP;
         status_message("TO?");
 
-        // wait until the joystick button is no longer pushed
 
       }
+
       else {
+        // wait until the joystick button is no longer pushed
         while (digitalRead(clientpins::joy_button_pin) == LOW) {}
+
         // if we were waiting for the end point, record it
         // and then communicate with the server to get the path
         end = get_cursor_lonlat();
@@ -230,15 +232,10 @@ int main() {
             // the shared.waypoints[] array, switch back to asking for the
             // start point of a new request
 
-            //The code for reading from seria will be something like:
-
-            // WORKS IN THEORY NEED TO TEST THIS
-            //handles drawing the route
-
             uint32_t startime = millis();
             char lineRead[129];
-            int byteInLine=0;
-            int start_index=0;
+            int byteInLine=0; //counter to keep track of the byte read in a char array
+            int start_index=0; //holds location of the start of the integer you want to read
             bool timeout = true;
 
             while (millis()-startime < 1000 && timeout){ //lines are separated by newline \n character
@@ -264,18 +261,21 @@ int main() {
               Serial.write('A');
               Serial.write('\n');
               Serial.flush();
+
               //thanks to Jason Cannon for the idea to use strtol()
               char* pointer; //helps to separate the string by space
               shared.waypoints[waypointCount].lat= strtol(&lineRead[start_index], &pointer, 10);
               shared.waypoints[waypointCount].lon= strtol(pointer, NULL, 10);
               waypointCount++;
             }
-            tft.setTextSize(1);
-            // tft.fillScreen(0);
-            tft.setCursor(10*waypointCount,15);
-            tft.println(waypointCount);
+
+            //debugging
+            // tft.setTextSize(1);
+            // // tft.fillScreen(0);
+            // tft.setCursor(10*waypointCount,15);
+            // tft.println(waypointCount);
             if (shared.num_waypoints == waypointCount) {
-              client = END;
+              client = END; //END state
             }
 
           }
