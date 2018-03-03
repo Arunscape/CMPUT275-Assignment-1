@@ -170,7 +170,7 @@ int main() {
         // TODO: communicate with the server to get the waypoints
         enum State {REQUEST, WAYPOINT, END};
         State client = REQUEST;
-        int waypointCount=0;
+        int waypointCount=0; //keep track of the number of waypoints received
         while (true) {
 
           if (client == REQUEST) {
@@ -216,7 +216,7 @@ int main() {
                 Serial.write('\n');
                 Serial.flush();
                 client = WAYPOINT;
-                waypointCount=0;
+                waypointCount=0; //reset count because new request
                 break;
               }
 
