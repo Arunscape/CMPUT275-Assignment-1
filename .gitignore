@@ -106,4 +106,4 @@ venv.bak/
 
 
 #ARDUINO SHIT
-/part2_client_base/part2/build-mega2560/
+/part2_client_base/part2/build-mega2560/*
