@@ -9,8 +9,6 @@ shared_vars shared;
 
 Adafruit_ILI9341 tft = Adafruit_ILI9341(clientpins::tft_cs, clientpins::tft_dc);
 
-void drawRoute();
-
 void setup() {
   // initialize Arduino
   init();
@@ -90,6 +88,24 @@ void process_input() {
       // it looks funny if we redraw the cursor before the map scrolls
       draw_cursor();      // draw the new cursor position
     }
+  }
+}
+
+void draw_route(){
+  for(int i=0; i<shared.num_waypoints-1; i++){
+    // in case I fuck something up
+    // x0=shared.waypoints[i].lat
+    // y0-shared.waypoints[i].lon
+    //
+    // x1=shared.waypoints[i+1].lat
+    // y1=shared.waypoints[i+1].lat
+
+    int x0=longitude_to_x(shared.map_number,shared.waypoints[i].lon)-shared.map_coords.x;
+    int y0=latitude_to_y(shared.map_number,shared.waypoints[i].lat)-shared.map_coords.y;
+
+    int x1=longitude_to_x(shared.map_number,shared.waypoints[i+1].lon)-shared.map_coords.x;
+    int y1=latitude_to_y(shared.map_number,shared.waypoints[i+1].lat)-shared.map_coords.y;
+    shared.tft->drawLine(x0, y0, x1, y1, 0x001F);//0x001F is BLUE
   }
 }
 
@@ -322,33 +338,10 @@ int main() {
       // redraw the map and cursor
       draw_map();
       draw_cursor();
-
-      // TODO: draw the route if there is one
-
-      //    shared.waypoints[] array
-      // tft.fillScreen(0);
-      drawRoute();
+      draw_route();
     }
   }
 
   Serial.flush();
   return 0;
-}
-
-void drawRoute(){
-  for(int i=0; i<shared.num_waypoints-1; i++){
-    // in case I fuck something up
-    // x0=shared.waypoints[i].lat
-    // y0-shared.waypoints[i].lon
-    //
-    // x1=shared.waypoints[i+1].lat
-    // y1=shared.waypoints[i+1].lat
-
-    int x0=longitude_to_x(shared.map_number,shared.waypoints[i].lon)-shared.map_coords.x;
-    int y0=latitude_to_y(shared.map_number,shared.waypoints[i].lat)-shared.map_coords.y;
-
-    int x1=longitude_to_x(shared.map_number,shared.waypoints[i+1].lon)-shared.map_coords.x;
-    int y1=latitude_to_y(shared.map_number,shared.waypoints[i+1].lat)-shared.map_coords.y;
-    shared.tft->drawLine(x0, y0, x1, y1, 0x001F);//0x001F is BLUE
-  }
 }
