@@ -332,11 +332,11 @@ int main() {
             // x1=shared.waypoints[i+1].lat
             // y1=shared.waypoints[i+1].lat
 
-            x0=longitude_to_x(map_number,shared.waypoints[i].lat);
-            y0=lattitude_to_y(map_number,shared.waypoints[i].lon);
+            int x0=longitude_to_x(shared.map_number,shared.waypoints[i].lon);
+            int y0=latitude_to_y(shared.map_number,shared.waypoints[i].lat);
 
-            x1=longitude_to_x(map_number,shared.waypoints[i+1].lat);
-            y1=lattitude_to_y(map_number,shared.waypoints[i+1].lat);
+            int x1=longitude_to_x(shared.map_number,shared.waypoints[i+1].lon);
+            int y1=latitude_to_y(shared.map_number,shared.waypoints[i+1].lat);
             tft.drawLine(x0, y0, x1, y1, 0x001F);//0x001F is BLUE
           }
         }
