@@ -9,6 +9,8 @@ shared_vars shared;
 
 Adafruit_ILI9341 tft = Adafruit_ILI9341(clientpins::tft_cs, clientpins::tft_dc);
 
+void drawRoute();
+
 void setup() {
   // initialize Arduino
   init();
@@ -131,6 +133,7 @@ int main() {
     if (shared.joy_button_pushed) {
 
       if (curr_mode == WAIT_FOR_START) {
+        while (digitalRead(clientpins::joy_button_pin) == LOW) {}
         // if we were waiting for the start point, record it
         // and indicate we are waiting for the end point
         start = get_cursor_lonlat();
@@ -138,9 +141,10 @@ int main() {
         status_message("TO?");
 
         // wait until the joystick button is no longer pushed
-        while (digitalRead(clientpins::joy_button_pin) == LOW) {}
+
       }
       else {
+        while (digitalRead(clientpins::joy_button_pin) == LOW) {}
         // if we were waiting for the end point, record it
         // and then communicate with the server to get the path
         end = get_cursor_lonlat();
@@ -250,9 +254,10 @@ int main() {
               shared.waypoints[waypointCount].lon= strtol(pointer, NULL, 10);
               waypointCount++;
             }
-            tft.setTextSize(5);
+            tft.setTextSize(1);
             // tft.fillScreen(0);
-            tft.print(waypointCount);
+            tft.setCursor(10*waypointCount,15);
+            tft.println(waypointCount);
             if (shared.num_waypoints == waypointCount) {
               client = END;
             }
@@ -282,6 +287,7 @@ int main() {
             }
 
             if (finished) {
+              shared.redraw_map=1;
               break;
             }
             else {
@@ -320,25 +326,29 @@ int main() {
       // TODO: draw the route if there is one
 
       //    shared.waypoints[] array
-      tft.fillScreen(0);
-      for(int i=0; i<shared.num_waypoints; i++){
-        // in case I fuck something up
-        // x0=shared.waypoints[i].lat
-        // y0-shared.waypoints[i].lon
-        //
-        // x1=shared.waypoints[i+1].lat
-        // y1=shared.waypoints[i+1].lat
-
-        int x0=longitude_to_x(shared.map_number,shared.waypoints[i].lon);
-        int y0=latitude_to_y(shared.map_number,shared.waypoints[i].lat);
-
-        int x1=longitude_to_x(shared.map_number,shared.waypoints[i+1].lon);
-        int y1=latitude_to_y(shared.map_number,shared.waypoints[i+1].lat);
-        tft.drawLine(x0, y0, x1, y1, 0x001F);//0x001F is BLUE
-      }
+      // tft.fillScreen(0);
+      drawRoute();
     }
   }
 
   Serial.flush();
   return 0;
+}
+
+void drawRoute(){
+  for(int i=0; i<shared.num_waypoints-1; i++){
+    // in case I fuck something up
+    // x0=shared.waypoints[i].lat
+    // y0-shared.waypoints[i].lon
+    //
+    // x1=shared.waypoints[i+1].lat
+    // y1=shared.waypoints[i+1].lat
+
+    int x0=longitude_to_x(shared.map_number,shared.waypoints[i].lon)-shared.map_coords.x;
+    int y0=latitude_to_y(shared.map_number,shared.waypoints[i].lat)-shared.map_coords.y;
+
+    int x1=longitude_to_x(shared.map_number,shared.waypoints[i+1].lon)-shared.map_coords.x;
+    int y1=latitude_to_y(shared.map_number,shared.waypoints[i+1].lat)-shared.map_coords.y;
+    shared.tft->drawLine(x0, y0, x1, y1, 0x001F);//0x001F is BLUE
+  }
 }
