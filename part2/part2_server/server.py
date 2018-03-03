@@ -124,12 +124,24 @@ def find_nearest_vertex(location, coords):
     return closest
 
 def decode_string(line):
+    """
+    Decodes a byte string into a normal string, with words separated
+    into a list
+    Returns:
+        stripped: string without the carriage return and newline
+        characters, words separated in a list
+    """
+
     line_string = line.decode("ASCII")
     stripped = line_string.rstrip("\r\n")
     stripped = stripped.split()
     return stripped
 
 def server_talk():
+    """
+    Communicates with the Arduino. This will run infinitely until
+    forced to stop.
+    """
 
     with Serial("/dev/ttyACM0", baudrate=9600, timeout=1) as ser:
         while True:
@@ -141,23 +153,25 @@ def server_talk():
 
             decoded = decode_string(line)
 
-            if decoded[0] != 'R' or len(decoded) != 5: #if an invalid request is received
+            #if an invalid request is received
+            if decoded[0] != 'R' or len(decoded) != 5:
                 print("invalid request, restarting")
                 continue
-
+            # debugging purposes
             print("Request received")
+
+            # compute the least cost path
             startvertex = find_nearest_vertex(location, (int(decoded[1]),int(decoded[2])) )
             endvertex = find_nearest_vertex(location, (int(decoded[3]),int(decoded[4])) )
-
             path = least_cost_path(yeg_graph, startvertex, endvertex, cost)
             out_line = "N " + str(len(path)) + "\n"
             ser.write(out_line.encode("ASCII"))
 
-            # if theres no path to the destination, return to waiting for a request
+            # if theres no path to the destination, or the max waypoint
+            # is exceeded, return to waiting for a request
             # without acknowledgement
             if len(path) == 0 or len(path) > 500:
                 continue
-
 
             # wait for acknowledgement
             line = ser.readline()
@@ -196,7 +210,7 @@ def server_talk():
             if timeout:
                 continue
 
-            #done sending all the waypoints, return to request waiting state
+            # done sending all the waypoints, return to request waiting state
             print('E')
             out_line = "E" + "\n"
             ser.write(out_line.encode("ASCII"))
