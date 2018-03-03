@@ -1,0 +1,83 @@
+Tamara Bojovic 1511502
+Arun Woosaree 1514457
+-------------------------------------------------------------------------------
+
+Assignment 1 Part 2 - Driving Route Finder:
+-------------------------------------------------------------------------------
+This program implements the server-side and client side functionality of an Edmonton driving route
+finder. Requests for directions are made via the joystick on the Arduino, and communicated
+to the server using Serial communication.
+
+In this second part we implement the following functionality:
+
+1. Communication between the Arduino and the server
+2. Timeout and handshaking functionality
+3. Drawing the shortest route on the map on the Arduino
+
+Usage Instructions
+-------------------------------------------------------------------------------
+Files from yeg-lcd.zip should be moved to the root of the sd card in the Arduino.
+
+Open a terminal in the directory of the client files
+To upload the code to the Arduino, type in
+______________________
+| $ make upload       |
+|_____________________|
+
+
+Open another terminal window in the directory of the server files.
+To run the server, type in
+______________________
+| $ python3 server.py |
+|_____________________|
+It is important that you run the server after the make upload step, otherwise
+you may not be able to upload the Arduino code. You should also not have serial-mon
+open, since this will mess with the server.
+
+
+To make a request, use the Joystick and zoom-in and zoom-out buttons to select
+a staring point, and then an ending point. Everything from there is handled automatically.
+Occasionally, the server and Arduino may get out of sync. This can be fixed by
+pressing the reset button on the Arduino. In our experience, the server
+does not need to be restarted.
+
+--------------------------------------------------------------------------
+Note: The latitudes and longitudes are integers, 100000ths of a degree.
+
+
+Required files from 'Helpful functions' folder:
+-------------------------------------------------------------------------------
+* binary_heap.py
+* breadth_first_search.py
+* graph.py
+* part2_client_base.tar.gz
+* yeg-lcd.zip
+
+
+NOTE: The file "edmonton-roads-2.0.1.txt" MUST be placed in the project directory.
+It is not included in our zip.
+
+Modifications to files:
+-------------------------------------------------------------------------------
+* line 2 in binary_heap.py was commented out
+  ```
+  from heapviz import *
+  ```
+
+* client.cpp
+
+Acknowledgments:
+--------------------------------------------------------------------------------
+Files from the "helpful functions" folder from eClass were downloaded and
+imported in server.py; they are not written by us. The least_cost_path function
+(Djikstra's algorithm) was developed from pseudo code posted on the eClass slides.
+The CostDistance class had a method and property already defined, we implemented
+them and filled in the code.
+
+A bunch of files in
+part2_client_base.tar.gz
+were given to us, and we modified code in the client.cpp file to implement the
+required functionality for this portion of the assignment.
+
+Jason Cannon helped with code that uses pointers and the strtol() function
+that allowed us to split the text sent to the Arduino by the server.
